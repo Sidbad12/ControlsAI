@@ -163,7 +163,6 @@ const s = {
     borderRadius   : "6px",
     padding        : "20px",
     marginBottom   : "16px",
-    whiteSpace     : "pre-wrap",
     fontSize       : "14px",
     lineHeight     : "1.7",
   },
@@ -247,6 +246,7 @@ export default function App() {
   const [loading,      setLoading]      = useState(false);
   const [response,     setResponse]     = useState(null);
   const [error,        setError]        = useState("");
+  const [modalImg,     setModalImg]     = useState(null);
 
   const handleSubmit = async () => {
     const text = mode === "qa" ? query.trim() : mermaid.trim();
@@ -290,6 +290,16 @@ export default function App() {
 
   return (
     <div style={s.app}>
+      {/* Img Modal */}
+      {modalImg && (
+        <div 
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', cursor: 'zoom-out' }}
+          onClick={() => setModalImg(null)}
+        >
+          <img src={modalImg} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
+        </div>
+      )}
+
       {/* Header */}
       <div style={s.header}>
         <div style={s.logo}>
@@ -446,13 +456,19 @@ export default function App() {
                       <img
                         src={`${API_BASE}${img.image_url}`}
                         alt={img.caption || `Diagram ${i + 1}`}
-                        style={s.img}
+                        style={{ ...s.img, cursor: 'zoom-in' }}
+                        onClick={() => setModalImg(`${API_BASE}${img.image_url}`)}
                         onError={(e) => { e.target.style.display = "none"; }}
                       />
                       {img.caption && (
-                        <div style={s.imgCaption}>{img.caption}</div>
+                        <div style={s.imgCaption}><strong>Diagram:</strong> {img.caption}</div>
                       )}
-                      <div style={{ ...s.imgCaption, borderTop: "none" }}>
+                      {img.explanation && (
+                        <div style={{ ...s.imgCaption, borderTop: "none", color: colors.text, fontStyle: "italic", backgroundColor: "#f9f9f9" }}>
+                          <span style={{color: colors.accent, fontWeight: "bold"}}>Relevance:</span> {img.explanation}
+                        </div>
+                      )}
+                      <div style={{ ...s.imgCaption, borderTop: `1px solid ${colors.border}` }}>
                         Page {img.page}
                       </div>
                     </div>
