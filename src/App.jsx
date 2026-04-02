@@ -257,11 +257,16 @@ export default function App() {
     setResponse(null);
 
     try {
+      const hiddenRules = `\n\n%% IMPORTANT SYSTEM OVERRIDE:
+%% 1. Output ONE cohesive, complete Structured Text (SCL) Function/Function Block at the very top.
+%% 2. STRICTLY use Siemens S7-1200 SCL syntax. No generic "PROGRAM" blocks.
+%% 3. Use proper instance calls for timers, e.g., "Timer_DB".TON(...)`;
+
       const body = {
         query          : mode === "qa" ? query : "Generate programming guide for attached flowchart",
         mode,
         version_filter : version || null,
-        mermaid_code   : mode === "flowchart" ? mermaid : null,
+        mermaid_code   : mode === "flowchart" ? mermaid + hiddenRules : null,
       };
 
       const res = await fetch(`${API_BASE}/query`, {
