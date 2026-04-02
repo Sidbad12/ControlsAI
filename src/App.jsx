@@ -402,20 +402,23 @@ export default function App() {
                 components={{
                   code({node, inline, className, children, ...props}) {
                     const match = /language-(\w+)/.exec(className || '')
-                    // SCL (Structured Control Language) is extremely similar to Pascal 
-                    const lang = match ? (match[1].toLowerCase() === 'scl' ? 'pascal' : match[1]) : '';
-                    return !inline && match ? (
+                    let lang = match ? match[1].toLowerCase() : 'text';
+                    if (lang === 'scl' || lang === 'st' || lang === 'ladder') {
+                      lang = 'pascal';
+                    }
+                    return !inline ? (
                       <SyntaxHighlighter
                         {...props}
                         style={vscDarkPlus}
                         language={lang}
                         PreTag="div"
+                        wrapLongLines={true}
                         customStyle={{ borderRadius: '6px', fontSize: '13px', margin: '0' }}
                       >
                         {String(children).replace(/\n$/, '')}
                       </SyntaxHighlighter>
                     ) : (
-                      <code {...props} className={className} style={{ backgroundColor: '#d0d8f0', padding: '2px 5px', borderRadius: '4px', fontSize: '13px', color: '#002060' }}>
+                      <code {...props} className={className} style={{ backgroundColor: '#d0d8f0', padding: '2px 5px', borderRadius: '4px', fontSize: '13px', color: '#002060', wordBreak: 'break-word' }}>
                         {children}
                       </code>
                     )
