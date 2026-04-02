@@ -1,10 +1,9 @@
 import ReactMarkdown from "react-markdown";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // ── CONFIG ─────────────────────────────────────────────────────────────────
-// Replace with your HuggingFace Spaces URL after deployment
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:7860";
 
 const VERSIONS = [
@@ -18,485 +17,471 @@ const VERSIONS = [
 // ── STYLES ─────────────────────────────────────────────────────────────────
 const colors = {
   navy    : "#002060",
-  navyDark: "#001540",
-  navyMid : "#003080",
-  light   : "#EAEAEA",
+  navyDark: "#001030",
+  navyMid : "#001b4d",
+  light   : "#F5F7FA",
   white   : "#FFFFFF",
   text    : "#1a1a1a",
-  muted   : "#666666",
-  border  : "#cccccc",
+  muted   : "#718096",
+  border  : "#E2E8F0",
   accent  : "#0050c0",
-  success : "#006400",
-  error   : "#8B0000",
+  success : "#48BB78",
+  error   : "#F56565",
+  bubbleUser: "#002060",
+  bubbleAI: "#FFFFFF",
 };
 
 const s = {
   app: {
-    minHeight    : "100vh",
+    display: "flex",
+    height : "100vh",
+    fontFamily: "Calibri, Segoe UI, Arial, sans-serif",
     backgroundColor: colors.light,
-    fontFamily   : "Calibri, Arial, sans-serif",
-    color        : colors.text,
+    color: colors.text,
   },
-  header: {
-    backgroundColor: colors.navy,
-    padding        : "16px 32px",
-    display        : "flex",
-    alignItems     : "center",
-    justifyContent : "space-between",
-    boxShadow      : "0 2px 8px rgba(0,0,0,0.3)",
+  sidebar: {
+    width: "260px",
+    backgroundColor: colors.navyDark,
+    display: "flex",
+    flexDirection: "column",
+    color: colors.white,
+    borderRight: "1px solid #000c24",
+    flexShrink: 0,
+  },
+  sidebarHeader: {
+    padding: "20px",
+    borderBottom: "1px solid #000c24",
   },
   logo: {
-    color      : colors.white,
-    fontSize   : "22px",
-    fontWeight : "700",
+    fontSize: "20px",
+    fontWeight: "700",
     letterSpacing: "1px",
+    marginBottom: "16px",
   },
-  logoAccent: {
-    color: "#6699ff",
-  },
-  badge: {
+  logoAccent: { color: "#6699ff" },
+  newBtn: {
+    width: "100%",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #334488",
     backgroundColor: colors.navyMid,
-    color          : "#aabbff",
-    fontSize       : "11px",
-    padding        : "3px 10px",
-    borderRadius   : "12px",
-    border         : "1px solid #334488",
+    color: "#aabbff",
+    fontSize: "13px",
+    fontWeight: "600",
+    textAlign: "left",
+    cursor: "pointer",
+    marginBottom: "8px",
+    transition: "background 0.2s",
+  },
+  sessionList: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "12px",
+  },
+  sessionItem: (active) => ({
+    padding: "10px 12px",
+    borderRadius: "6px",
+    fontSize: "13px",
+    backgroundColor: active ? colors.navyMid : "transparent",
+    color: active ? colors.white : "#cbd5e0",
+    cursor: "pointer",
+    marginBottom: "4px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    transition: "0.2s",
+  }),
+  sidebarFooter: {
+    padding: "20px",
+    borderTop: "1px solid #000c24",
   },
   main: {
-    maxWidth : "900px",
-    margin   : "0 auto",
-    padding  : "32px 24px",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    position: "relative",
   },
-  card: {
-    backgroundColor: colors.white,
-    borderRadius   : "8px",
-    padding        : "24px",
-    marginBottom   : "20px",
-    boxShadow      : "0 1px 4px rgba(0,0,0,0.08)",
-    border         : `1px solid ${colors.border}`,
+  chatArea: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "24px 0",
+    display: "flex",
+    flexDirection: "column",
   },
-  label: {
-    display      : "block",
-    fontSize     : "12px",
-    fontWeight   : "700",
-    color        : colors.navy,
-    marginBottom : "6px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
+  chatContainer: {
+    maxWidth: "800px",
+    width: "90%",
+    margin: "0 auto",
   },
-  select: {
-    width           : "100%",
-    padding         : "10px 12px",
-    border          : `1px solid ${colors.border}`,
-    borderRadius    : "6px",
-    fontSize        : "14px",
-    backgroundColor : colors.white,
-    color           : colors.text,
-    marginBottom    : "16px",
-    outline         : "none",
-  },
-  tabBar: {
-    display      : "flex",
-    gap          : "8px",
-    marginBottom : "16px",
-  },
-  tab: (active) => ({
-    padding        : "8px 20px",
-    border         : `1px solid ${active ? colors.navy : colors.border}`,
-    borderRadius   : "6px",
-    backgroundColor: active ? colors.navy : colors.white,
-    color          : active ? colors.white : colors.text,
-    fontSize       : "13px",
-    fontWeight     : active ? "700" : "400",
-    cursor         : "pointer",
+  bubble: (role) => ({
+    maxWidth: "85%",
+    padding: "16px",
+    borderRadius: role === "user" ? "12px 12px 0 12px" : "12px 12px 12px 0",
+    alignSelf: role === "user" ? "flex-end" : "flex-start",
+    backgroundColor: role === "user" ? colors.bubbleUser : colors.bubbleAI,
+    color: role === "user" ? colors.white : colors.text,
+    marginBottom: "20px",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+    fontSize: "14px",
+    lineHeight: "1.6",
+    border: role === "user" ? "none" : `1px solid ${colors.border}`,
   }),
+  inputArea: {
+    borderTop: `1px solid ${colors.border}`,
+    padding: "24px",
+    backgroundColor: colors.white,
+  },
+  inputWrap: {
+    maxWidth: "800px",
+    width: "90%",
+    margin: "0 auto",
+    position: "relative",
+  },
   textarea: {
-    width          : "100%",
-    padding        : "12px",
-    border         : `1px solid ${colors.border}`,
-    borderRadius   : "6px",
-    fontSize       : "14px",
-    fontFamily     : "Calibri, Arial, sans-serif",
-    resize         : "vertical",
-    minHeight      : "80px",
-    outline        : "none",
-    boxSizing      : "border-box",
+    width: "100%",
+    padding: "14px 45px 14px 16px",
+    borderRadius: "8px",
+    border: `1px solid ${colors.border}`,
+    fontSize: "14px",
+    fontFamily: "inherit",
+    resize: "none",
+    outline: "none",
+    maxHeight: "200px",
+    overflowY: "auto",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
   },
-  monoArea: {
-    width          : "100%",
-    padding        : "12px",
-    border         : `1px solid ${colors.border}`,
-    borderRadius   : "6px",
-    fontSize       : "12px",
-    fontFamily     : "Consolas, monospace",
-    resize         : "vertical",
-    minHeight      : "120px",
-    outline        : "none",
-    backgroundColor: "#f8f8f8",
-    boxSizing      : "border-box",
+  sendBtn: {
+    position: "absolute",
+    right: "10px",
+    bottom: "10px",
+    background: colors.navy,
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    padding: "6px 12px",
+    cursor: "pointer",
+    fontWeight: "700",
   },
-  btn: {
-    backgroundColor: colors.navy,
-    color          : colors.white,
-    border         : "none",
-    borderRadius   : "6px",
-    padding        : "12px 28px",
-    fontSize       : "14px",
-    fontWeight     : "700",
-    cursor         : "pointer",
-    marginTop      : "8px",
+  labelFixed: {
+    fontSize: "11px",
+    fontWeight: "700",
+    color: colors.navy,
+    textTransform: "uppercase",
+    marginBottom: "4px",
+    display: "block",
   },
-  btnDisabled: {
-    backgroundColor: colors.border,
-    color          : colors.muted,
-    border         : "none",
-    borderRadius   : "6px",
-    padding        : "12px 28px",
-    fontSize       : "14px",
-    fontWeight     : "700",
-    cursor         : "not-allowed",
-    marginTop      : "8px",
-  },
-  answerBox: {
-    backgroundColor: "#f0f4ff",
-    border         : `1px solid ${colors.accent}`,
-    borderRadius   : "6px",
-    padding        : "20px",
-    marginBottom   : "16px",
-    fontSize       : "14px",
-    lineHeight     : "1.7",
+  selectMini: {
+    width: "100%",
+    padding: "6px",
+    fontSize: "11px",
+    backgroundColor: "#000c24",
+    border: "1px solid #334488",
+    color: "white",
+    borderRadius: "4px",
+    outline: "none",
   },
   sourceTag: {
-    display        : "inline-block",
+    display: "inline-block",
     backgroundColor: colors.navy,
-    color          : colors.white,
-    fontSize       : "11px",
-    padding        : "3px 10px",
-    borderRadius   : "4px",
-    marginRight    : "6px",
-    marginBottom   : "6px",
-  },
-  imageGrid: {
-    display             : "grid",
-    gridTemplateColumns : "repeat(auto-fill, minmax(200px, 1fr))",
-    gap                 : "12px",
-    marginTop           : "12px",
-  },
-  imgCard: {
-    border      : `1px solid ${colors.border}`,
-    borderRadius: "6px",
-    overflow    : "hidden",
-    backgroundColor: colors.white,
-  },
-  img: {
-    width     : "100%",
-    display   : "block",
-    maxHeight : "160px",
-    objectFit : "contain",
-    backgroundColor: "#fafafa",
-    padding   : "8px",
-  },
-  imgCaption: {
-    fontSize  : "11px",
-    color     : colors.muted,
-    padding   : "6px 8px",
-    borderTop : `1px solid ${colors.border}`,
-  },
-  latency: {
-    fontSize : "12px",
-    color    : colors.muted,
+    color: colors.white,
+    fontSize: "10px",
+    padding: "2px 8px",
+    borderRadius: "4px",
+    marginRight: "4px",
     marginTop: "8px",
   },
-  error: {
-    backgroundColor: "#fff0f0",
-    border         : `1px solid ${colors.error}`,
-    borderRadius   : "6px",
-    padding        : "12px 16px",
-    color          : colors.error,
-    fontSize       : "13px",
-  },
-  sectionTitle: {
-    fontSize     : "13px",
-    fontWeight   : "700",
-    color        : colors.navy,
-    marginBottom : "10px",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
+  imageCard: {
+    border: `1px solid ${colors.border}`,
+    borderRadius: "8px",
+    overflow: "hidden",
+    marginTop: "12px",
+    backgroundColor: colors.white,
   },
   spinner: {
-    display        : "inline-block",
-    width          : "18px",
-    height         : "18px",
-    border         : "3px solid #ddd",
-    borderTop      : `3px solid ${colors.navy}`,
-    borderRadius   : "50%",
-    animation      : "spin 0.8s linear infinite",
-    verticalAlign  : "middle",
-    marginRight    : "8px",
-  },
+    width: "14px",
+    height: "14px",
+    border: "2px solid #ddd",
+    borderTopColor: colors.navy,
+    borderRadius: "50%",
+    animation: "spin 0.8s linear infinite",
+    display: "inline-block",
+  }
 };
 
+// ── UTILS ───────────────────────────────────────────────────────────────────
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
-// ── APP ─────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [mode,         setMode]         = useState("qa");
-  const [query,        setQuery]        = useState("");
-  const [mermaid,      setMermaid]      = useState("");
-  const [version,      setVersion]      = useState("");
-  const [loading,      setLoading]      = useState(false);
-  const [response,     setResponse]     = useState(null);
-  const [error,        setError]        = useState("");
-  const [modalImg,     setModalImg]     = useState(null);
+  const [sessions, setSessions] = useState(() => {
+    const saved = localStorage.getItem("controlsai_sessions");
+    return saved ? JSON.parse(saved) : [{ 
+      id: generateId(), 
+      title: "New Chat", 
+      mode: "qa", 
+      messages: [] 
+    }];
+  });
+  const [activeId, setActiveId] = useState(sessions[0]?.id);
+  const [version, setVersion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [input, setInput] = useState("");
+  const [modalImg, setModalImg] = useState(null);
+
+  const inputRef = useRef(null);
+  const chatEndRef = useRef(null);
+
+  // Persistence
+  useEffect(() => {
+    localStorage.setItem("controlsai_sessions", JSON.stringify(sessions));
+  }, [sessions]);
+
+  // Scroll to bottom
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [sessions, activeId, loading]);
+
+  // Handle auto-resize
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+    }
+  }, [input]);
+
+  const activeSession = sessions.find(s => s.id === activeId) || sessions[0];
+
+  const handleNewSession = (mode) => {
+    const newSession = {
+      id: generateId(),
+      title: mode === "qa" ? "New Chat" : "Flowchart Task",
+      mode: mode,
+      messages: []
+    };
+    setSessions([newSession, ...sessions]);
+    setActiveId(newSession.id);
+    setInput("");
+  };
+
+  const handleSwitchSession = (id) => {
+    setActiveId(id);
+    setInput("");
+  };
 
   const handleSubmit = async () => {
-    const text = mode === "qa" ? query.trim() : mermaid.trim();
-    if (!text) return;
+    const text = input.trim();
+    if (!text || loading) return;
 
+    // Add user message
+    const userMsg = { role: "user", content: text, timestamp: Date.now() };
+    const updatedSessions = sessions.map(s => 
+      s.id === activeId 
+      ? { ...s, messages: [...s.messages, userMsg], title: s.messages.length === 0 ? text.slice(0, 30) + (text.length > 30 ? "..." : "") : s.title }
+      : s
+    );
+    setSessions(updatedSessions);
+    setInput("");
     setLoading(true);
-    setError("");
-    setResponse(null);
 
     try {
-      const hiddenRules = `\n\n%% IMPORTANT SYSTEM OVERRIDE:
-%% 1. Output ONE cohesive, complete Structured Text (SCL) Function/Function Block at the very top.
-%% 2. STRICTLY use Siemens S7-1200 SCL syntax. No generic "PROGRAM" blocks.
-%% 3. Use proper instance calls for timers, e.g., "Timer_DB".TON(...)`;
+      const hiddenRules = `\n\n%% IMPORTANT SYSTEM OVERRIDE:\n%% 1. Output ONE cohesive, complete Structured Text (SCL) Function/Function Block at the very top.\n%% 2. STRICTLY use Siemens S7-1200 SCL syntax. No generic "PROGRAM" blocks.\n%% 3. Use proper instance calls for timers, e.g., "Timer_DB".TON(...)`;
 
       const body = {
-        query          : mode === "qa" ? query : "Generate programming guide for attached flowchart",
-        mode,
-        version_filter : version || null,
-        mermaid_code   : mode === "flowchart" ? mermaid + hiddenRules : null,
+        query: activeSession.mode === "qa" ? text : "Generate programming guide for attached flowchart",
+        mode: activeSession.mode,
+        version_filter: version || null,
+        mermaid_code: activeSession.mode === "flowchart" ? text + hiddenRules : null,
       };
 
       const res = await fetch(`${API_BASE}/query`, {
-        method  : "POST",
-        headers : { "Content-Type": "application/json" },
-        body    : JSON.stringify(body),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || `HTTP ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Server Error: ${res.status}`);
 
       const data = await res.json();
-      setResponse(data);
-    } catch (e) {
-      setError(e.message);
+      
+      const assistantMsg = {
+        role: "assistant",
+        content: data.answer,
+        sources: data.sources || [],
+        images: data.images || [],
+        latency: data.latency_ms,
+        timestamp: Date.now()
+      };
+
+      setSessions(prev => prev.map(s => 
+        s.id === activeId ? { ...s, messages: [...s.messages, assistantMsg] } : s
+      ));
+    } catch (err) {
+      const errorMsg = { role: "assistant", content: `**Error:** ${err.message}`, isError: true };
+      setSessions(prev => prev.map(s => 
+        s.id === activeId ? { ...s, messages: [...s.messages, errorMsg] } : s
+      ));
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && e.ctrlKey) handleSubmit();
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   return (
     <div style={s.app}>
       {/* Img Modal */}
       {modalImg && (
-        <div 
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', cursor: 'zoom-out' }}
-          onClick={() => setModalImg(null)}
-        >
-          <img src={modalImg} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', cursor: 'pointer' }} onClick={() => setModalImg(null)}>
+          <img src={modalImg} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} alt="Zoomed" />
         </div>
       )}
 
-      {/* Header */}
-      <div style={s.header}>
-        <div style={s.logo}>
-          CONTROLS<span style={s.logoAccent}>AI</span>
+      {/* Sidebar */}
+      <div style={s.sidebar}>
+        <div style={s.sidebarHeader}>
+          <div style={s.logo}>CONTROLS<span style={s.logoAccent}>AI</span></div>
+          <button style={s.newBtn} onClick={() => handleNewSession("qa")}>+ New Chat</button>
+          <button style={s.newBtn} onClick={() => handleNewSession("flowchart")}>+ New Flowchart</button>
         </div>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <span style={s.badge}>S7-1200</span>
-          <span style={s.badge}>v0.5</span>
+        
+        <div style={s.sessionList}>
+          {sessions.map(sess => (
+            <div 
+              key={sess.id} 
+              style={s.sessionItem(sess.id === activeId)}
+              onClick={() => handleSwitchSession(sess.id)}
+            >
+              {sess.mode === "flowchart" ? "󱡠 " : "󰭹 "} {sess.title}
+            </div>
+          ))}
+        </div>
+
+        <div style={s.sidebarFooter}>
+          <label style={s.labelFixed}>Hardware Version</label>
+          <select style={s.selectMini} value={version} onChange={(e) => setVersion(e.target.value)}>
+            {VERSIONS.map(v => <option key={v.value} value={v.value}>{v.label}</option>)}
+          </select>
+          <div style={{ fontSize: "10px", marginTop: "12px", color: "#4a5568" }}>v1.0 Release Candidate</div>
         </div>
       </div>
 
+      {/* Main Content */}
       <div style={s.main}>
-
-        {/* Input card */}
-        <div style={s.card}>
-
-          {/* Version selector */}
-          <label style={s.label}>Firmware Version</label>
-          <select
-            style={s.select}
-            value={version}
-            onChange={(e) => setVersion(e.target.value)}
-          >
-            {VERSIONS.map(v => (
-              <option key={v.value} value={v.value}>{v.label}</option>
-            ))}
-          </select>
-
-          {/* Mode tabs */}
-          <div style={s.tabBar}>
-            <button style={s.tab(mode === "qa")}
-              onClick={() => setMode("qa")}>
-              Q&A
-            </button>
-            <button style={s.tab(mode === "flowchart")}
-              onClick={() => setMode("flowchart")}>
-              Flowchart → Code
-            </button>
-          </div>
-
-          {/* Input */}
-          {mode === "qa" ? (
-            <>
-              <label style={s.label}>Your Question</label>
-              <textarea
-                style={s.textarea}
-                placeholder="e.g. How do I configure a TON timer? What causes the red light on S7-1200?"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <div style={{ fontSize: "11px", color: colors.muted, marginTop: "4px" }}>
-                Ctrl+Enter to submit
-              </div>
-            </>
-          ) : (
-            <>
-              <label style={s.label}>Mermaid Flowchart</label>
-              <textarea
-                style={s.monoArea}
-                placeholder={`flowchart TD\n    A[Start] --> B{Sensor Active?}\n    B -->|Yes| C[Start Motor]\n    B -->|No| D[Wait 5s]\n    D --> B\n    C --> E[Run Conveyor]`}
-                value={mermaid}
-                onChange={(e) => setMermaid(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-            </>
-          )}
-
-          <button
-            style={loading ? s.btnDisabled : s.btn}
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span style={s.spinner} />
-                Processing...
-              </>
-            ) : (
-              mode === "qa" ? "Ask CONTROLSAI" : "Generate Code"
-            )}
-          </button>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div style={s.error}>
-            Error: {error}
-          </div>
-        )}
-
-        {/* Response */}
-        {response && (
-          <div style={s.card}>
-
-            {/* Answer */}
-            <div style={s.sectionTitle}>Answer</div>
-            <div style={s.answerBox}>
-              <ReactMarkdown
-                components={{
-                  code({node, inline, className, children, ...props}) {
-                    const match = /language-(\w+)/.exec(className || '')
-                    let lang = match ? match[1].toLowerCase() : 'text';
-                    if (lang === 'scl' || lang === 'st' || lang === 'ladder') {
-                      lang = 'pascal';
-                    }
-                    return !inline ? (
-                      <SyntaxHighlighter
-                        {...props}
-                        style={vscDarkPlus}
-                        language={lang}
-                        PreTag="div"
-                        wrapLongLines={true}
-                        customStyle={{ borderRadius: '6px', fontSize: '13px', margin: '0' }}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code {...props} className={className} style={{ backgroundColor: '#d0d8f0', padding: '2px 5px', borderRadius: '4px', fontSize: '13px', color: '#002060', wordBreak: 'break-word' }}>
-                        {children}
-                      </code>
-                    )
-                  }
-                }}
-              >
-                {response.answer.replace(/\[Source \d+\s*\|[\s\S]*?Pages\s*\[.*?\]\]\s*/g, '')}
-              </ReactMarkdown>
-            </div>
-
-            {/* Latency */}
-            <div style={s.latency}>
-              Response time: {response.latency_ms}ms
-              {response.version_used && ` | Version: ${response.version_used}`}
-            </div>
-
-            {/* Sources */}
-            {response.sources?.length > 0 && (
-              <div style={{ marginTop: "16px" }}>
-                <div style={s.sectionTitle}>Sources</div>
-                {response.sources.map((src, i) => (
-                  <span key={i} style={s.sourceTag}>
-                    {src.section?.slice(0, 40)} | {src.version} | p.{src.pages?.join(",")}
-                  </span>
-                ))}
+        <div style={s.chatArea}>
+          <div style={s.chatContainer}>
+            {activeSession.messages.length === 0 && (
+              <div style={{ textAlign: "center", color: colors.muted, marginTop: "100px" }}>
+                <h2 style={{ color: colors.navy }}>Welcome to ControlsAI</h2>
+                <p>Selected Mode: **{activeSession.mode === "qa" ? "Q&A System" : "Flowchart to Code"}**</p>
+                <p style={{ fontSize: "13px" }}>Ask a technical question about S7-1200 or paste a Mermaid flowchart to begin.</p>
               </div>
             )}
+            
+            {activeSession.messages.map((m, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={s.bubble(m.role)}>
+                  <ReactMarkdown
+                    components={{
+                      code({node, inline, className, children, ...props}) {
+                        const match = /language-(\w+)/.exec(className || '');
+                        let lang = match ? match[1].toLowerCase() : 'text';
+                        if (['scl','st','ladder'].includes(lang)) lang = 'pascal';
+                        return !inline ? (
+                          <SyntaxHighlighter
+                            style={vscDarkPlus}
+                            language={lang}
+                            PreTag="div"
+                            wrapLongLines={true}
+                            customStyle={{ borderRadius: '6px', fontSize: '13px', margin: '0' }}
+                          >
+                            {String(children).replace(/\n$/, '')}
+                          </SyntaxHighlighter>
+                        ) : (
+                          <code {...props} style={{ backgroundColor: m.role === 'user' ? '#003380' : '#edf2f7', padding: '2px 4px', borderRadius: '3px', color: m.role === 'user' ? 'white' : colors.navy, fontSize: '90%' }}>
+                            {children}
+                          </code>
+                        );
+                      }
+                    }}
+                  >
+                    {m.content.replace(/\[Source \d+\s*\|[\s\S]*?Pages\s*\[.*?\]\]\s*/g, '')}
+                  </ReactMarkdown>
 
-            {/* Images */}
-            {response.images?.length > 0 && (
-              <div style={{ marginTop: "16px" }}>
-                <div style={s.sectionTitle}>
-                  Relevant Diagrams ({response.images.length})
-                </div>
-                <div style={s.imageGrid}>
-                  {response.images.map((img, i) => (
-                    <div key={i} style={s.imgCard}>
-                      <img
-                        src={`${API_BASE}${img.image_url}`}
-                        alt={img.caption || `Diagram ${i + 1}`}
-                        style={{ ...s.img, cursor: 'zoom-in' }}
+                  {m.sources?.length > 0 && (
+                    <div style={{ marginTop: "12px", borderTop: "1px dashed #cbd5e0", paddingTop: "8px" }}>
+                      {m.sources.map((src, si) => (
+                        <span key={si} style={s.sourceTag}>
+                          {src.section?.slice(0, 30)} | p.{src.pages?.join(",")}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {m.images?.map((img, ii) => (
+                    <div key={ii} style={s.imageCard}>
+                      <img 
+                        src={`${API_BASE}${img.image_url}`} 
+                        alt="Diagram"
+                        style={{ width: '100%', cursor: 'zoom-in' }} 
                         onClick={() => setModalImg(`${API_BASE}${img.image_url}`)}
-                        onError={(e) => { e.target.style.display = "none"; }}
                       />
-                      {img.caption && (
-                        <div style={s.imgCaption}><strong>Diagram:</strong> {img.caption}</div>
-                      )}
-                      {img.explanation && (
-                        <div style={{ ...s.imgCaption, borderTop: "none", color: colors.text, fontStyle: "italic", backgroundColor: "#f9f9f9" }}>
-                          <span style={{color: colors.accent, fontWeight: "bold"}}>Relevance:</span> {img.explanation}
-                        </div>
-                      )}
-                      <div style={{ ...s.imgCaption, borderTop: `1px solid ${colors.border}` }}>
-                        Page {img.page}
+                      <div style={{ padding: "6px 10px", fontSize: "11px", backgroundColor: "#f8f9fa", fontStyle: "italic" }}>
+                        {img.caption || img.explanation}
                       </div>
                     </div>
                   ))}
+
+                  {m.latency && (
+                    <div style={{ fontSize: "10px", color: colors.muted, marginTop: "8px", textAlign: "right" }}>
+                      {m.latency}ms
+                    </div>
+                  )}
                 </div>
               </div>
+            ))}
+            {loading && (
+              <div style={s.bubble("assistant")}>
+                <div style={s.spinner} /> <span style={{ marginLeft: "8px", fontSize: "13px" }}>Retrieving technical context...</span>
+              </div>
             )}
+            <div ref={chatEndRef} />
           </div>
-        )}
+        </div>
 
+        {/* Input area */}
+        <div style={s.inputArea}>
+          <div style={s.inputWrap}>
+            <textarea
+              ref={inputRef}
+              style={s.textarea}
+              rows={1}
+              placeholder={activeSession.mode === "qa" ? "Ask a question..." : "Paste Mermaid flowchart..."}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button style={s.sendBtn} onClick={handleSubmit} disabled={loading || !input.trim()}>
+              Send
+            </button>
+          </div>
+          <div style={{ textAlign: "center", fontSize: "11px", color: colors.muted, marginTop: "8px" }}>
+            Press Enter to send, Shift+Enter for new line
+          </div>
+        </div>
       </div>
 
       <style>{`
-        @keyframes spin {
-          0%   { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
         body { margin: 0; }
-        textarea:focus, select:focus { border-color: #002060; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
       `}</style>
     </div>
   );
