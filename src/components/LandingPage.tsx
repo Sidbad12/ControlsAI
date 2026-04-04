@@ -403,7 +403,9 @@ export default function LandingPage({ user, isLoggedIn, onLogout, onStartChat, o
               ))}
             </ul>
             <motion.a
-              href="#"
+              href="https://drive.google.com/drive/folders/1qiOnHAFP0VDGicxFJIOggY2Ys9nrd6N8?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ x: 4 }}
               className="inline-flex items-center gap-2 font-industrial uppercase text-lg border-b-2 border-[#0050C0] pb-1 hover:text-[#0050C0] transition-colors"
             >
@@ -459,7 +461,7 @@ export default function LandingPage({ user, isLoggedIn, onLogout, onStartChat, o
       <footer className="relative z-10 bg-[#001540] border-t border-white/5 py-12">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-8">
           <div className="mb-6 md:mb-0">
-            <p className="text-[#999999] text-xs font-medium uppercase tracking-widest">2026 KURO</p>
+            <p className="text-[#999999] text-xs font-medium uppercase tracking-widest">@2026 KURO</p>
           </div>
           <div className="flex gap-8">
             <button onClick={onTerms}   className="text-[#999999] hover:text-[#0050C0] text-xs font-medium uppercase tracking-widest transition-colors">Terms of Service</button>
