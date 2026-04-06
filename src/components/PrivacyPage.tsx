@@ -30,17 +30,17 @@ export default function PrivacyPage({ onBack }: Props) {
           {
             icon: Database,
             title: 'What We Store',
-            body: `CONTROLSAI stores all session data — including your queries, AI responses, session titles, and conversation history — locally in your browser's IndexedDB database. Nothing is transmitted to our servers. Your engineering logic, proprietary process descriptions, and PLC configurations never leave your machine. When you clear your browser data, all CONTROLSAI sessions are permanently deleted.`,
+            body: `CONTROLSAI stores all session data — including your queries, AI responses, session titles, and conversation history — securely in Google Firebase Firestore. Your engineering logic, proprietary process descriptions, and PLC configurations are strictly isolated under your personal user account. Based on mandatory Firestore Security Rules, no other users or unauthorized parties can read your session history.`,
           },
           {
             icon: Shield,
-            title: 'What We Do Not Collect',
-            body: `We do not collect, transmit, or store: personally identifiable information (PII), IP addresses, usage telemetry, or any content of your conversations. The CONTROLSAI backend receives your query text solely to generate a response; this text is not logged or persisted on any server.`,
+            title: 'Telemetry & Data Usage',
+            body: `We do not collect, transmit, or store: personally identifiable information (PII) beyond your Google account email, advertising telemetry, or IP logs. The CONTROLSAI backend securely transmits your query text to our LLM inference engine solely to generate responses, after which it is stored in your private, isolated Firestore session history.`,
           },
           {
             icon: Lock,
-            title: 'Authentication',
-            body: `If you choose to create an account (email/password or Google Sign-In), your authentication credentials are managed by Firebase Authentication (Google). We receive a session token only. We do not store passwords. Account creation is optional — the full CONTROLSAI feature set is available without signing in.`,
+            title: 'Authentication & Access',
+            body: `Access to CONTROLSAI is strictly governed by a zero-trust Domain Whitelist. Authentication credentials are managed securely by Firebase Authentication (Google Sign-In). We do not store passwords. After signing in, your account is placed in a lockdown state and must be explicitly approved by a Domain Administrator before you gain access to the terminal.`,
           },
           {
             icon: AlertTriangle,
@@ -55,7 +55,7 @@ export default function PrivacyPage({ onBack }: Props) {
           {
             icon: Database,
             title: 'Your Rights',
-            body: `You can delete all your local data at any time by clearing your browser's IndexedDB for controlsai.io, or by using the "Clear All Sessions" option within the application. If you have an account, you may request account deletion by emailing privacy@controlsai.io.`,
+            body: `You maintain complete ownership of your session data. You can delete all your session history at any time by using the "Clear All Sessions" option within the application, which permanently purges the data from our Firestore database. You may request full account and data deletion by emailing privacy@controlsai.io.`,
           },
           {
             icon: Lock,

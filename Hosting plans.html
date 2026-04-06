@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ControlsAI — Full Stack Hosting</title>
+<style>
+  :root {
+    --bg:       #FAF7F4;
+    --surface:  #FFFFFF;
+    --surface2: #F5EDE4;
+    --border:   #E8DDD6;
+    --border2:  #C4785A;
+    --text1:    #1C1410;
+    --text2:    #5A3E32;
+    --text3:    #9A7060;
+    --accent:   #9E3D2B;
+    --accent2:  #C4785A;
+    --green:    #27500A;
+    --greenb:   #EAF3DE;
+    --amber:    #633806;
+    --amberb:   #FAEEDA;
+    --red:      #7A1F1F;
+    --redb:     #FCEBEB;
+    --blue:     #0C447C;
+    --blueb:    #E6F1FB;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text1); min-height: 100vh; padding: 2.5rem 1.5rem; max-width: 880px; margin: 0 auto; }
+  .top { display: flex; align-items: center; gap: 12px; padding-bottom: 1.25rem; margin-bottom: 0.25rem; border-bottom: 1px solid var(--border); }
+  .logo { width: 36px; height: 36px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #F5EDE4; flex-shrink: 0; }
+  .top-title { font-size: 16px; font-weight: 600; color: var(--text1); }
+  .top-sub   { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .kpill { margin-left: auto; font-size: 10px; background: var(--surface2); color: var(--accent); border: 1px solid var(--accent2); padding: 3px 10px; border-radius: 99px; white-space: nowrap; font-weight: 500; }
+  .slabel { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin: 1.75rem 0 0.6rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; }
+  .card.hi-blue  { border: 2px solid #378ADD; }
+  .card.hi-green { border: 2px solid #3B6D11; }
+  .badge { display: inline-block; font-size: 10px; padding: 2px 9px; border-radius: 99px; margin-bottom: 9px; font-weight: 600; }
+  .bi { background: var(--blueb);  color: var(--blue); }
+  .bs { background: var(--greenb); color: var(--green); }
+  .bw { background: var(--amberb); color: var(--amber); }
+  .pname { font-size: 14px; font-weight: 600; color: var(--text1); margin-bottom: 2px; }
+  .prole { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+  .row  { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-top: 1px solid var(--border); }
+  .rl   { font-size: 12px; color: var(--text3); }
+  .rv   { font-size: 12px; font-weight: 500; color: var(--text2); }
+  .g  { color: var(--green); } .a { color: var(--amber); } .r { color: var(--red); }
+  .lbtn { display: block; margin-top: 12px; text-align: center; font-size: 11px; padding: 6px 0; border: 1px solid var(--border2); border-radius: 6px; color: var(--accent); text-decoration: none; font-weight: 500; background: var(--surface2); }
+  .lbtn:hover { background: var(--border); }
+  .totrow { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.1rem; background: var(--surface2); border: 1px solid var(--accent2); border-radius: 10px; margin-top: 0.75rem; }
+  .totlabel { font-size: 12px; color: var(--text2); }
+  .totval   { font-size: 15px; font-weight: 600; color: var(--accent); }
+  .footer { margin-top: 2rem; font-size: 11px; color: var(--text3); text-align: center; padding-top: 1rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">CA</div>
+  <div>
+    <p class="top-title">ControlsAI — Full Stack Hosting</p>
+    <p class="top-sub">V1.0 infrastructure plan · All costs in INR</p>
+  </div>
+  <span class="kpill">Kuro Systems</span>
+</div>
+
+<p class="slabel">Frontend</p>
+<div class="grid">
+  <div class="card hi-blue">
+    <span class="badge bi">Current — active</span>
+    <p class="pname">Vercel — Hobby</p><p class="prole">React frontend</p>
+    <div class="row"><span class="rl">Cost now</span><span class="rv g">₹0 / mo</span></div>
+    <div class="row"><span class="rl">Bandwidth</span><span class="rv">100 GB free</span></div>
+    <div class="row"><span class="rl">Custom domain</span><span class="rv g">Yes, free</span></div>
+    <div class="row"><span class="rl">Upgrade to Pro</span><span class="rv a">₹1,680 / mo</span></div>
+    <div class="row"><span class="rl">Upgrade when</span><span class="rv">Team / clients join</span></div>
+    <a class="lbtn" href="https://vercel.com/pricing" target="_blank">View pricing →</a>
+  </div>
+</div>
+
+<p class="slabel">Backend — CPU</p>
+<div class="grid">
+  <div class="card">
+    <span class="badge bw">Current — free tier</span>
+    <p class="pname">HuggingFace Spaces</p><p class="prole">FastAPI + FAISS + BM25</p>
+    <div class="row"><span class="rl">Cost now</span><span class="rv g">₹0 / mo</span></div>
+    <div class="row"><span class="rl">Cold starts</span><span class="rv r">30–60 sec</span></div>
+    <div class="row"><span class="rl">Always on</span><span class="rv r">No</span></div>
+    <div class="row"><span class="rl">Production ready</span><span class="rv r">No</span></div>
+    <div class="row"><span class="rl">Upgrade when</span><span class="rv">V1.0 launch</span></div>
+    <a class="lbtn" href="https://huggingface.co/pricing" target="_blank">View pricing →</a>
+  </div>
+  <div class="card hi-green">
+    <span class="badge bs">V1.0 — recommended</span>
+    <p class="pname">Railway</p><p class="prole">FastAPI + FAISS + BM25</p>
+    <div class="row"><span class="rl">Cost</span><span class="rv g">~₹420 / mo</span></div>
+    <div class="row"><span class="rl">Cold starts</span><span class="rv g">None</span></div>
+    <div class="row"><span class="rl">Always on</span><span class="rv g">Yes</span></div>
+    <div class="row"><span class="rl">GPU support</span><span class="rv r">No</span></div>
+    <div class="row"><span class="rl">Custom domain</span><span class="rv g">Yes</span></div>
+    <a class="lbtn" href="https://railway.com/pricing" target="_blank">View pricing →</a>
+  </div>
+  <div class="card">
+    <span class="badge bi">Alternative</span>
+    <p class="pname">Render</p><p class="prole">FastAPI + FAISS + BM25</p>
+    <div class="row"><span class="rl">Cost</span><span class="rv g">~₹590 / mo</span></div>
+    <div class="row"><span class="rl">Cold starts</span><span class="rv g">None (paid)</span></div>
+    <div class="row"><span class="rl">Always on</span><span class="rv g">Yes</span></div>
+    <div class="row"><span class="rl">GPU support</span><span class="rv r">No</span></div>
+    <div class="row"><span class="rl">Custom domain</span><span class="rv g">Yes</span></div>
+    <a class="lbtn" href="https://render.com/pricing" target="_blank">View pricing →</a>
+  </div>
+</div>
+
+<p class="slabel">GPU — Model inference</p>
+<div class="grid">
+  <div class="card hi-green">
+    <span class="badge bs">V1.0 — best pick</span>
+    <p class="pname">Together AI</p><p class="prole">Fine-tuned Llama 3.1 8B</p>
+    <div class="row"><span class="rl">Pricing</span><span class="rv g">₹15 / 1M tokens</span></div>
+    <div class="row"><span class="rl">Cold starts</span><span class="rv g">None</span></div>
+    <div class="row"><span class="rl">Fine-tune upload</span><span class="rv g">Yes</span></div>
+    <div class="row"><span class="rl">GPU</span><span class="rv">NVIDIA H100</span></div>
+    <div class="row"><span class="rl">Est. monthly</span><span class="rv g">₹500–800</span></div>
+    <div class="row"><span class="rl">Free credits</span><span class="rv g">$100 on signup</span></div>
+    <a class="lbtn" href="https://www.together.ai/pricing" target="_blank">View pricing →</a>
+  </div>
+  <div class="card">
+    <span class="badge bw">Alternative</span>
+    <p class="pname">RunPod Serverless</p><p class="prole">Fine-tuned Llama 3.1 8B</p>
+    <div class="row"><span class="rl">GPU</span><span class="rv">RTX 4000 Ada</span></div>
+    <div class="row"><span class="rl">Pricing</span><span class="rv">~₹14 / hr</span></div>
+    <div class="row"><span class="rl">Cold starts</span><span class="rv r">6–12 sec</span></div>
+    <div class="row"><span class="rl">Fine-tune upload</span><span class="rv g">Yes</span></div>
+    <div class="row"><span class="rl">Est. monthly</span><span class="rv a">₹500–1,200</span></div>
+    <div class="row"><span class="rl">Scales to zero</span><span class="rv g">Yes</span></div>
+    <a class="lbtn" href="https://www.runpod.io/pricing" target="_blank">View pricing →</a>
+  </div>
+</div>
+
+<div style="border-top: 1px solid var(--border); margin-top: 1.75rem;"></div>
+<div class="totrow">
+  <span class="totlabel">Estimated V1.0 total · Railway + Together AI + Vercel</span>
+  <span class="totval">~₹920–1,220 / mo</span>
+</div>
+
+<p class="footer">ControlsAI · Kuro Systems · V1.0 Infrastructure Plan</p>
+
+</body>
+</html>
