@@ -11,6 +11,25 @@ interface Props {
   onClose: () => void;
 }
 
+class PdfErrorBoundary extends React.Component<{children: React.ReactNode}, {crashed: boolean}> {
+  state = { crashed: false }
+  componentDidCatch() { this.setState({ crashed: true }) }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-[#EAEAEA]/50">
+          <span className="material-symbols-outlined text-4xl text-[#0050C0] mb-4">error</span>
+          <h4 className="font-industrial font-bold text-lg text-[#001540] mb-2">PDF Viewer Crashed</h4>
+          <p className="font-body text-sm text-[#001540]/70 max-w-sm">
+            The PDF background worker failed to load or parse the document. Please close this modal and try again.
+          </p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function PdfViewerModal({ pdfUrl, initialPage, onClose }: Props) {
   // Memoize the plugin instance to prevent infinite re-render loops in React 18 Strict Mode
   const defaultLayoutPluginInstance = React.useMemo(() => defaultLayoutPlugin(), []);
@@ -46,11 +65,13 @@ export default function PdfViewerModal({ pdfUrl, initialPage, onClose }: Props) 
             </div>
             
             <div className="w-full max-w-[1200px] mx-auto h-full bg-[#EAEAEA] flex-1 overflow-hidden border border-[#C8D8F0]/30 shadow-inner relative rounded-sm">
-              <Viewer
-                fileUrl={pdfUrl}
-                plugins={[defaultLayoutPluginInstance]}
-                initialPage={initialPage}
-              />
+              <PdfErrorBoundary>
+                <Viewer
+                  fileUrl={pdfUrl}
+                  plugins={[defaultLayoutPluginInstance]}
+                  initialPage={initialPage}
+                />
+              </PdfErrorBoundary>
             </div>
           </div>
         </Drawer.Content>

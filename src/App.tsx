@@ -18,6 +18,8 @@ import { Worker } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.js?url';
+
 import { API_BASE, API_KEY }                 from './config';
 import { generateId, sanitizeInput, buildHistory } from './utils';
 import { auth } from './firebase';
@@ -227,8 +229,9 @@ export default function App() {
   }, []);
 
   const handlePdfClick = useCallback((url: string, pages: number[]) => {
-    setPdfUrl(prev => prev === url ? prev : url);
-    setPdfPage(pages?.length > 0 ? Math.max(0, pages[0] - 1) : 0);
+    setPdfUrl(url);
+    const sourcePage = pages.length > 0 ? pages[0] : 1;
+    setPdfPage(Math.max(0, sourcePage - 1));
   }, []);
 
   // ── Submit ────────────────────────────────────────────────────────────────
@@ -359,7 +362,7 @@ export default function App() {
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
   return (
-    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+    <Worker workerUrl={pdfjsWorker}>
       <div 
         className={`flex h-screen overflow-hidden transition-colors duration-300 ${
           uiMode === 'tui' ? 'bg-[#1c1917]' : 'bg-[#fcf9f8]'
