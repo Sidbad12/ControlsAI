@@ -53,6 +53,7 @@ export interface QueryApiResponse {
   images       : DiagramImage[];
   latency_ms   : number;
   version_used : string | null;
+  model?       : string;
 }
 
 export interface VersionOption {

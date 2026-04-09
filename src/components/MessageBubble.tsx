@@ -282,7 +282,7 @@ export default function MessageBubble({ m, sessionId, index, onImageClick, onPdf
                       <img
                         src={`${API_BASE}${img.image_url}`}
                         alt={img.caption || 'Diagram'}
-                        className="w-full h-32 object-cover mb-2 grayscale group-hover:grayscale-0 transition-all"
+                        className="w-full h-32 object-contain mb-2 grayscale group-hover:grayscale-0 transition-all"
                       />
                       <span className="text-[9px] text-[--text-dim] uppercase block truncate">{img.caption || 'IMG_STREAM_0' + ii}</span>
                     </div>
